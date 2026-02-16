@@ -1,6 +1,9 @@
-use anyhow::{Context, Result, bail};
+use anyhow::{Context, Result};
 use chrono::{Datelike, NaiveDate};
-use serde::Deserialize;
+use futures::executor::block_on;
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
+use ynab_api::apis::configuration::{ApiKey, Configuration};
+use ynab_api::apis::{budgets_api, categories_api, transactions_api};
 
 // --- API response types ---
 
@@ -117,60 +120,54 @@ pub trait YnabApi {
         month: NaiveDate,
         category_id: &str,
     ) -> Result<Category>;
-    fn get_transactions(
-        &self,
-        budget_id: &str,
-        since_date: NaiveDate,
-    ) -> Result<Vec<Transaction>>;
+    fn get_transactions(&self, budget_id: &str, since_date: NaiveDate) -> Result<Vec<Transaction>>;
 }
 
 // --- HTTP implementation ---
 
-const BASE_URL: &str = "https://api.ynab.com/v1";
-
 pub struct HttpYnabClient {
-    client: reqwest::blocking::Client,
-    token: String,
+    configuration: Configuration,
 }
 
 impl HttpYnabClient {
     pub fn new(token: &str) -> Result<Self> {
-        let client = reqwest::blocking::Client::new();
-        Ok(Self {
-            client,
-            token: token.to_string(),
-        })
+        let mut configuration = Configuration::new();
+        configuration.api_key = Some(ApiKey {
+            prefix: Some("Bearer".to_string()),
+            key: token.to_string(),
+        });
+
+        Ok(Self { configuration })
     }
 
-    fn get_json<T: serde::de::DeserializeOwned>(&self, url: &str) -> Result<T> {
-        let resp = self
-            .client
-            .get(url)
-            .bearer_auth(&self.token)
-            .send()
-            .with_context(|| format!("GET {url}"))?;
-
-        let status = resp.status();
-        if !status.is_success() {
-            let body = resp.text().unwrap_or_default();
-            bail!("YNAB API returned {status} for {url}: {body}");
-        }
-
-        resp.json::<T>()
-            .with_context(|| format!("parsing response from {url}"))
+    fn map_model<TSrc, TDst>(&self, src: TSrc, name: &str) -> Result<TDst>
+    where
+        TSrc: Serialize,
+        TDst: DeserializeOwned,
+    {
+        let value = serde_json::to_value(src)
+            .with_context(|| format!("serializing YNAB response model {name}"))?;
+        serde_json::from_value(value)
+            .with_context(|| format!("deserializing YNAB response model into crustynab {name}"))
     }
 }
 
 impl YnabApi for HttpYnabClient {
     fn get_budgets(&self) -> Result<Vec<BudgetSummary>> {
-        let resp: BudgetsResponse =
-            self.get_json(&format!("{BASE_URL}/budgets"))?;
+        let response = block_on(budgets_api::get_budgets(&self.configuration, None))
+            .map_err(|err| anyhow::anyhow!("get_budgets failed: {err:?}"))?;
+        let resp: BudgetsResponse = self.map_model(response, "BudgetSummaryResponse")?;
         Ok(resp.data.budgets)
     }
 
     fn get_category_groups(&self, budget_id: &str) -> Result<Vec<CategoryGroup>> {
-        let resp: CategoriesResponse =
-            self.get_json(&format!("{BASE_URL}/budgets/{budget_id}/categories"))?;
+        let response = block_on(categories_api::get_categories(
+            &self.configuration,
+            budget_id,
+            None,
+        ))
+        .map_err(|err| anyhow::anyhow!("get_categories failed for budget {budget_id}: {err:?}"))?;
+        let resp: CategoriesResponse = self.map_model(response, "CategoriesResponse")?;
         Ok(resp.data.category_groups)
     }
 
@@ -180,24 +177,39 @@ impl YnabApi for HttpYnabClient {
         month: NaiveDate,
         category_id: &str,
     ) -> Result<Category> {
-        let first_of_month =
-            NaiveDate::from_ymd_opt(month.year(), month.month(), 1)
-                .ok_or_else(|| anyhow::anyhow!("invalid month from {month}"))?;
-        let month_str = first_of_month.format("%Y-%m-%d");
-        let resp: CategoryResponse = self.get_json(&format!(
-            "{BASE_URL}/budgets/{budget_id}/months/{month_str}/categories/{category_id}"
-        ))?;
+        let first_of_month = NaiveDate::from_ymd_opt(month.year(), month.month(), 1)
+            .ok_or_else(|| anyhow::anyhow!("invalid month from {month}"))?;
+        let month_str = first_of_month.format("%Y-%m-%d").to_string();
+        let response = block_on(categories_api::get_month_category_by_id(
+            &self.configuration,
+            budget_id,
+            month_str.clone(),
+            category_id,
+        ))
+        .map_err(|err| {
+            anyhow::anyhow!(
+                "get_month_category_by_id failed for budget {budget_id}, month {month_str}, category {category_id}: {err:?}"
+            )
+        })?;
+        let resp: CategoryResponse = self.map_model(response, "CategoryResponse")?;
         Ok(resp.data.category)
     }
 
-    fn get_transactions(
-        &self,
-        budget_id: &str,
-        since_date: NaiveDate,
-    ) -> Result<Vec<Transaction>> {
-        let resp: TransactionsResponse = self.get_json(&format!(
-            "{BASE_URL}/budgets/{budget_id}/transactions?since_date={since_date}"
-        ))?;
+    fn get_transactions(&self, budget_id: &str, since_date: NaiveDate) -> Result<Vec<Transaction>> {
+        let since = since_date.format("%Y-%m-%d").to_string();
+        let response = block_on(transactions_api::get_transactions(
+            &self.configuration,
+            budget_id,
+            Some(since.clone()),
+            None,
+            None,
+        ))
+        .map_err(|err| {
+            anyhow::anyhow!(
+                "get_transactions failed for budget {budget_id}, since_date {since}: {err:?}"
+            )
+        })?;
+        let resp: TransactionsResponse = self.map_model(response, "TransactionsResponse")?;
         Ok(resp.data.transactions)
     }
 }

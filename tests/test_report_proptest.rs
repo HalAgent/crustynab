@@ -2,9 +2,7 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 
 use chrono::{Duration, NaiveDate};
 use crustynab::report::{self, CategoryFrame, TransactionFrame};
-use crustynab::ynab::{
-    BudgetSummary, CategoryGroup, SubTransaction, Transaction,
-};
+use crustynab::ynab::{BudgetSummary, CategoryGroup, SubTransaction, Transaction};
 use polars::prelude::*;
 use proptest::prelude::*;
 use proptest::string::string_regex;
@@ -83,7 +81,10 @@ fn polars_days_to_date(days: i32) -> NaiveDate {
 }
 
 fn transaction_frame(rows: &[TxRow]) -> TransactionFrame {
-    let dates_days: Vec<i32> = rows.iter().map(|row| date_to_polars_days(row.date)).collect();
+    let dates_days: Vec<i32> = rows
+        .iter()
+        .map(|row| date_to_polars_days(row.date))
+        .collect();
     let amounts: Vec<f64> = rows
         .iter()
         .map(|row| row.amount_milli as f64 / 1000.0)
@@ -129,7 +130,11 @@ fn transaction_multiset(df: &DataFrame) -> BTreeMap<String, usize> {
         .cast(&DataType::Int32)
         .expect("date cast to i32");
     let date_days = date_col.i32().expect("date i32");
-    let amounts = df.column("amount").expect("amount").f64().expect("amount f64");
+    let amounts = df
+        .column("amount")
+        .expect("amount")
+        .f64()
+        .expect("amount f64");
     let payees = df
         .column("payee_name")
         .expect("payee_name")
@@ -231,7 +236,9 @@ fn category_rows_strategy() -> impl Strategy<Value = Vec<CategoryRow>> {
         )
 }
 
-fn transaction_rows_for_categories(category_names: Vec<String>) -> impl Strategy<Value = Vec<TxRow>> {
+fn transaction_rows_for_categories(
+    category_names: Vec<String>,
+) -> impl Strategy<Value = Vec<TxRow>> {
     let category_strategy = prop_oneof![
         3 => prop::sample::select(category_names),
         1 => short_text_strategy().prop_map(|name| format!("other_{name}")),
@@ -250,8 +257,7 @@ fn transaction_rows_for_categories(category_names: Vec<String>) -> impl Strategy
         0..=25,
     )
     .prop_map(|rows| {
-        rows
-            .into_iter()
+        rows.into_iter()
             .map(|(date, amount_milli, payee_name, category_name)| TxRow {
                 date,
                 amount_milli,
@@ -287,8 +293,7 @@ fn transaction_rows_any_strategy() -> impl Strategy<Value = Vec<TxRow>> {
         0..=25,
     )
     .prop_map(|rows| {
-        rows
-            .into_iter()
+        rows.into_iter()
             .map(|(date, amount_milli, payee_name, category_name)| TxRow {
                 date,
                 amount_milli,

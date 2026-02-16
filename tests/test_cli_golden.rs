@@ -119,9 +119,7 @@ fn make_config(show_all_rows: bool) -> Config {
     }
 }
 
-fn run_report(
-    cfg: &Config,
-) -> Result<(String, LazyFrame, LazyFrame)> {
+fn run_report(cfg: &Config) -> Result<(String, LazyFrame, LazyFrame)> {
     let categories = make_categories();
     let transactions = make_transactions();
 
@@ -136,7 +134,8 @@ fn run_report(
         report::relevant_transactions(transactions_frame, report_start, report_end);
 
     let cat_names: HashSet<String> = categories.iter().map(|c| c.name.clone()).collect();
-    let report_table = report::build_report_table(categories_budgeted, transactions_frame, &cat_names)?;
+    let report_table =
+        report::build_report_table(categories_budgeted, transactions_frame, &cat_names)?;
 
     let report_table_full = report_table.clone();
     let report_table_display = if cfg.show_all_rows {
@@ -145,7 +144,8 @@ fn run_report(
         report_table.filter(col("spent").neq(lit(0.0)))
     };
 
-    let category_group_totals = report::build_category_group_totals_table(report_table_full.clone())?;
+    let category_group_totals =
+        report::build_category_group_totals_table(report_table_full.clone())?;
 
     let week_year = report_week.week_start.year();
     let week_number = report_week.week_number;

@@ -69,10 +69,7 @@ fn expand_transaction(txn: &Transaction) -> Vec<TransactionRow> {
                 sub.category_name.as_ref().map(|cat_name| TransactionRow {
                     date: txn.date,
                     amount: sub.amount as f64 / 1000.0,
-                    payee_name: sub
-                        .payee_name
-                        .clone()
-                        .or_else(|| txn.payee_name.clone()),
+                    payee_name: sub.payee_name.clone().or_else(|| txn.payee_name.clone()),
                     category_name: cat_name.clone(),
                 })
             })
@@ -90,17 +87,11 @@ fn expand_transaction(txn: &Transaction) -> Vec<TransactionRow> {
 }
 
 pub fn transactions_to_polars(transactions: &[Transaction]) -> Result<TransactionFrame> {
-    let rows: Vec<TransactionRow> = transactions
-        .iter()
-        .flat_map(expand_transaction)
-        .collect();
+    let rows: Vec<TransactionRow> = transactions.iter().flat_map(expand_transaction).collect();
 
     let dates: Vec<i32> = rows.iter().map(|r| date_to_polars_days(r.date)).collect();
     let amounts: Vec<f64> = rows.iter().map(|r| r.amount).collect();
-    let payees: Vec<Option<&str>> = rows
-        .iter()
-        .map(|r| r.payee_name.as_deref())
-        .collect();
+    let payees: Vec<Option<&str>> = rows.iter().map(|r| r.payee_name.as_deref()).collect();
     let categories: Vec<&str> = rows.iter().map(|r| r.category_name.as_str()).collect();
 
     let date_series = Column::new("date".into(), &dates)
@@ -121,11 +112,7 @@ pub fn categories_to_polars(categories: &[Category]) -> Result<CategoryFrame> {
     let names: Vec<&str> = categories.iter().map(|c| c.name.as_str()).collect();
     let group_names: Vec<&str> = categories
         .iter()
-        .map(|c| {
-            c.category_group_name
-                .as_deref()
-                .unwrap_or("Uncategorized")
-        })
+        .map(|c| c.category_group_name.as_deref().unwrap_or("Uncategorized"))
         .collect();
     let budgeted: Vec<f64> = categories
         .iter()
@@ -229,24 +216,17 @@ pub fn build_category_group_totals_table(report_table: LazyFrame) -> Result<Lazy
             col("spent"),
             col("balance"),
         ])
-        .sort(
-            ["category_group_name"],
-            SortMultipleOptions::default(),
-        );
+        .sort(["category_group_name"], SortMultipleOptions::default());
 
-    let overall_total = report_table
-        .select([
-            lit("Total").alias("category_group_name"),
-            col("budgeted").sum().alias("budgeted"),
-            col("spent").sum().alias("spent"),
-            col("balance").sum().alias("balance"),
-        ]);
+    let overall_total = report_table.select([
+        lit("Total").alias("category_group_name"),
+        col("budgeted").sum().alias("budgeted"),
+        col("spent").sum().alias("spent"),
+        col("balance").sum().alias("balance"),
+    ]);
 
-    let result = concat(
-        [group_totals, overall_total],
-        UnionArgs::default(),
-    )
-    .context("concatenating group totals with overall total")?;
+    let result = concat([group_totals, overall_total], UnionArgs::default())
+        .context("concatenating group totals with overall total")?;
 
     Ok(result)
 }

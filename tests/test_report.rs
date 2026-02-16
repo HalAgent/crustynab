@@ -174,10 +174,7 @@ fn transactions_to_polars_expands_splits() {
 #[test]
 fn categories_to_polars_converts_milliunits() {
     let groups = make_category_groups();
-    let cats: Vec<Category> = groups
-        .into_iter()
-        .flat_map(|g| g.categories)
-        .collect();
+    let cats: Vec<Category> = groups.into_iter().flat_map(|g| g.categories).collect();
     let cf = report::categories_to_polars(&cats).unwrap();
     let df = cf.0.collect().unwrap();
     insta::assert_snapshot!(format!("{df}"));
@@ -197,10 +194,7 @@ fn relevant_transactions_filters_date_range() {
 #[test]
 fn build_report_table_sums_spent() {
     let groups = make_category_groups();
-    let all_cats: Vec<Category> = groups
-        .into_iter()
-        .flat_map(|g| g.categories)
-        .collect();
+    let all_cats: Vec<Category> = groups.into_iter().flat_map(|g| g.categories).collect();
     let cf = report::categories_to_polars(&all_cats).unwrap();
 
     let transactions = make_transactions();
@@ -218,10 +212,7 @@ fn build_report_table_sums_spent() {
 #[test]
 fn category_group_totals_match_rows() {
     let groups = make_category_groups();
-    let all_cats: Vec<Category> = groups
-        .into_iter()
-        .flat_map(|g| g.categories)
-        .collect();
+    let all_cats: Vec<Category> = groups.into_iter().flat_map(|g| g.categories).collect();
     let cf = report::categories_to_polars(&all_cats).unwrap();
 
     let transactions = make_transactions();

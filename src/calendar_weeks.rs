@@ -52,8 +52,7 @@ fn make_month_week(
     .pred_opt()
     .expect("valid last day")
     .day();
-    let month_last =
-        NaiveDate::from_ymd_opt(year, month, days_in_month).expect("valid month end");
+    let month_last = NaiveDate::from_ymd_opt(year, month, days_in_month).expect("valid month end");
 
     MonthWeek {
         month,

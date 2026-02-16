@@ -42,7 +42,7 @@ generates weekly spending reports in multiple output formats.
 
 - `src/config.rs` — Configuration types (`Config`, `OutputFormat`) and JSON loading
 - `src/calendar_weeks.rs` — Sunday–Saturday week partitioning split at month boundaries
-- `src/ynab.rs` — YNAB API types, `YnabApi` trait, and `HttpYnabClient` implementation
+- `src/ynab.rs` — YNAB API types, `YnabApi` trait, and `HttpYnabClient` adapter over `ynab-api`
 - `src/report.rs` — Polars DataFrame transforms: `CategoryFrame`, `TransactionFrame`,
   `build_report_table`, `build_category_group_totals_table`
 - `src/visual_report.rs` — HTML report generation with interactive table selection
@@ -51,7 +51,7 @@ generates weekly spending reports in multiple output formats.
 ### Key Dependencies
 
 - `polars` (lazy, csv, fmt, dtype-date, is_in) — DataFrame operations
-- `reqwest` (blocking, json) — YNAB REST API calls
+- `ynab-api` — YNAB REST API client bindings used by `HttpYnabClient`
 - `chrono` — Date handling
 - `indexmap` — Ordered maps for category group watch list
 - `serde` / `serde_json` — Config deserialization

@@ -38,11 +38,7 @@ fn partition_2024_no_duplicate_dates() {
     let mut sorted = all_dates.clone();
     sorted.sort();
     sorted.dedup();
-    insta::assert_snapshot!(format!(
-        "total={} unique={}",
-        all_dates.len(),
-        sorted.len()
-    ));
+    insta::assert_snapshot!(format!("total={} unique={}", all_dates.len(), sorted.len()));
     assert_eq!(all_dates.len(), sorted.len());
 }
 
@@ -54,8 +50,7 @@ fn partition_2024_week_boundaries() {
         let start_dow = w.week_start.weekday();
         let end_dow = w.week_end.weekday();
         let month_first = NaiveDate::from_ymd_opt(2024, w.month, 1).unwrap();
-        let start_ok =
-            start_dow == chrono::Weekday::Sun || w.week_start == month_first;
+        let start_ok = start_dow == chrono::Weekday::Sun || w.week_start == month_first;
         let month_last_day = if w.month == 12 {
             NaiveDate::from_ymd_opt(2025, 1, 1)
         } else {
@@ -64,8 +59,7 @@ fn partition_2024_week_boundaries() {
         .unwrap()
         .pred_opt()
         .unwrap();
-        let end_ok =
-            end_dow == chrono::Weekday::Sat || w.week_end == month_last_day;
+        let end_ok = end_dow == chrono::Weekday::Sat || w.week_end == month_last_day;
         if !start_ok || !end_ok {
             issues.push(format!(
                 "week {} month {} start={} ({:?}) end={} ({:?})",
@@ -82,12 +76,7 @@ fn month_weeks_march_2024() {
     let weeks = month_weeks(2024, 3);
     let summary: Vec<String> = weeks
         .iter()
-        .map(|w| {
-            format!(
-                "week {} {}-{}",
-                w.week_number, w.week_start, w.week_end
-            )
-        })
+        .map(|w| format!("week {} {}-{}", w.week_number, w.week_start, w.week_end))
         .collect();
     insta::assert_snapshot!(summary.join("\n"));
 }
@@ -116,7 +105,10 @@ fn month_week_for_date_contains_date() {
         .map(|&d| {
             let w = month_week_for_date(d).unwrap();
             let contains = w.week_start <= d && d <= w.week_end;
-            format!("{d} contained={contains} week={}-{}", w.week_start, w.week_end)
+            format!(
+                "{d} contained={contains} week={}-{}",
+                w.week_start, w.week_end
+            )
         })
         .collect();
     insta::assert_snapshot!(results.join("\n"));

@@ -16,9 +16,7 @@ pub fn format_currency(value: f64, show_zero: bool) -> String {
 
 fn format_with_commas(value: f64) -> String {
     let formatted = format!("{:.2}", value);
-    let (integer_part, decimal_part) = formatted
-        .split_once('.')
-        .unwrap_or((&formatted, "00"));
+    let (integer_part, decimal_part) = formatted.split_once('.').unwrap_or((&formatted, "00"));
 
     let chars: Vec<char> = integer_part.chars().collect();
     let with_commas: String = chars
@@ -79,15 +77,9 @@ fn with_value_columns(df: &DataFrame) -> Result<DataFrame> {
         })
         .collect();
 
-    let per_month: Float64Chunked = planned
-        .iter()
-        .map(|p| p.map(|v| v / 12.0))
-        .collect();
+    let per_month: Float64Chunked = planned.iter().map(|p| p.map(|v| v / 12.0)).collect();
 
-    let remaining = df
-        .column("balance")
-        .context("balance column")?
-        .clone();
+    let remaining = df.column("balance").context("balance column")?.clone();
 
     let is_annual_bool: BooleanChunked = is_annual;
 

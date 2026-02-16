@@ -1,4 +1,4 @@
-use crustynab::visual_report::{build_visual_report_html, darken_hex, format_currency, CURRENCY};
+use crustynab::visual_report::{CURRENCY, build_visual_report_html, darken_hex, format_currency};
 use indexmap::IndexMap;
 use polars::prelude::*;
 
@@ -47,9 +47,7 @@ fn darken_hex_short_passthrough() {
     insta::assert_snapshot!(darken_hex("#fff", 0.85));
 }
 
-fn make_report_lazyframe(
-    rows: Vec<(&str, &str, f64, f64, f64, &str)>,
-) -> LazyFrame {
+fn make_report_lazyframe(rows: Vec<(&str, &str, f64, f64, f64, &str)>) -> LazyFrame {
     let cat_names: Vec<&str> = rows.iter().map(|r| r.0).collect();
     let group_names: Vec<&str> = rows.iter().map(|r| r.1).collect();
     let budgeted: Vec<f64> = rows.iter().map(|r| r.2).collect();
@@ -116,9 +114,14 @@ fn visual_report_totals_include_hidden_balance() {
 
 #[test]
 fn visual_report_hides_remaining_when_no_spend() {
-    let report = make_report_lazyframe(vec![
-        ("Zero Spend", "Essentials", 50.0, 0.0, 50.0, "monthly"),
-    ]);
+    let report = make_report_lazyframe(vec![(
+        "Zero Spend",
+        "Essentials",
+        50.0,
+        0.0,
+        50.0,
+        "monthly",
+    )]);
 
     let mut group_colors = IndexMap::new();
     group_colors.insert("Essentials".to_string(), "#dfe7f5".to_string());

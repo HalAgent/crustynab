@@ -60,8 +60,7 @@ pub fn run(api: &dyn YnabApi, cfg: &config::Config) -> Result<()> {
     let transactions_frame =
         report::relevant_transactions(transactions_frame, report_start, report_end);
 
-    let category_names: HashSet<String> =
-        month_categories.iter().map(|c| c.name.clone()).collect();
+    let category_names: HashSet<String> = month_categories.iter().map(|c| c.name.clone()).collect();
 
     let report_table =
         report::build_report_table(categories_budgeted, transactions_frame, &category_names)?;
@@ -136,8 +135,7 @@ pub fn run(api: &dyn YnabApi, cfg: &config::Config) -> Result<()> {
             let totals_path =
                 csv_output.with_file_name(format!("{stem}_category_group_totals.{ext}"));
 
-            std::fs::write(csv_output, &csv)
-                .with_context(|| format!("writing {csv_output:?}"))?;
+            std::fs::write(csv_output, &csv).with_context(|| format!("writing {csv_output:?}"))?;
             std::fs::write(&totals_path, &totals_csv)
                 .with_context(|| format!("writing {totals_path:?}"))?;
         }
@@ -159,9 +157,7 @@ pub fn run(api: &dyn YnabApi, cfg: &config::Config) -> Result<()> {
 
 fn write_csv_string(df: &mut DataFrame) -> Result<String> {
     let mut buf = Vec::new();
-    CsvWriter::new(&mut buf)
-        .finish(df)
-        .context("writing CSV")?;
+    CsvWriter::new(&mut buf).finish(df).context("writing CSV")?;
     String::from_utf8(buf).context("CSV not valid UTF-8")
 }
 
