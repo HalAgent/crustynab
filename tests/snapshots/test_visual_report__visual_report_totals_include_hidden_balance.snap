@@ -1,0 +1,195 @@
+---
+source: tests/test_visual_report.rs
+expression: html
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Budget Visual Report</title>
+  <style>
+    :root {
+      --grid: #d9d9d9;
+      --header-bg: #f7f3e9;
+      --text: #1f1f1f;
+    }
+    body {
+      margin: 24px;
+      font-family: "Alegreya Sans", "Trebuchet MS", sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #fbf9f4 0%, #f3efe7 100%);
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    h1 {
+      font-size: 20px;
+      margin: 0 0 16px 0;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fffefc;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+      user-select: none;
+    }
+    th, td {
+      border: 1px solid var(--grid);
+      padding: 6px 8px;
+      font-size: 13px;
+      vertical-align: middle;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    th {
+      background: var(--header-bg);
+      text-align: left;
+      font-weight: 700;
+    }
+    td.number {
+      text-align: right;
+      white-space: nowrap;
+    }
+    tr.total td {
+      font-weight: 700;
+      border-top: 2px solid #9a9a9a;
+    }
+    td.selected {
+      outline: 2px solid #2a5d86;
+      outline-offset: -2px;
+      position: relative;
+    }
+    @media (max-width: 760px) {
+      body { margin: 12px; }
+      th, td { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Week 1</h1>
+  <table class="selectable">
+    <thead>
+      <tr>
+        <th rowspan="2">Category</th>
+        <th rowspan="2">2024 (planned)</th>
+        <th rowspan="2">2024 per month</th>
+        <th colspan="2">Week 1</th>
+      </tr>
+      <tr>
+        <th>Spent</th>
+        <th>Remaining in period</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="group" style="background-color: #dfe7f5;">
+        <td>Groceries</td>
+        <td class="number">£600.00</td>
+        <td class="number">£50.00</td>
+        <td class="number">£10.00</td>
+        <td class="number">£30.00</td>
+      </tr>
+      <tr class="total" style="background-color: #bdc4d0;">
+        <td>Total Essentials</td>
+        <td class="number">£840.00</td>
+        <td class="number">£70.00</td>
+        <td class="number">£10.00</td>
+        <td class="number"></td>
+      </tr>
+      <tr class="total" style="background-color: #b7b7b7;">
+        <td>Total</td>
+        <td class="number">£840.00</td>
+        <td class="number">£70.00</td>
+        <td class="number">£10.00</td>
+        <td class="number"></td>
+      </tr>
+    </tbody>
+  </table>
+  <script>
+    const table = document.querySelector("table.selectable");
+    if (table) {
+      const rows = Array.from(table.querySelectorAll("tbody tr"));
+      const cellGrid = rows.map((row, rowIndex) => {
+        return Array.from(row.querySelectorAll("td")).map((cell, colIndex) => {
+          cell.dataset.row = String(rowIndex);
+          cell.dataset.col = String(colIndex);
+          return cell;
+        });
+      });
+      let selecting = false;
+      let startCell = null;
+      let selection = null;
+      const clearSelection = () => {
+        table.querySelectorAll("td.selected").forEach((cell) => {
+          cell.classList.remove("selected");
+        });
+      };
+      const applySelection = (endCell) => {
+        if (!startCell || !endCell) {
+          return;
+        }
+        const startRow = Number(startCell.dataset.row);
+        const startCol = Number(startCell.dataset.col);
+        const endRow = Number(endCell.dataset.row);
+        const endCol = Number(endCell.dataset.col);
+        const minRow = Math.min(startRow, endRow);
+        const maxRow = Math.max(startRow, endRow);
+        const minCol = Math.min(startCol, endCol);
+        const maxCol = Math.max(startCol, endCol);
+        selection = { minRow, maxRow, minCol, maxCol };
+        clearSelection();
+        for (let row = minRow; row <= maxRow; row += 1) {
+          const cells = cellGrid[row] || [];
+          for (let col = minCol; col <= maxCol; col += 1) {
+            const cell = cells[col];
+            if (cell) {
+              cell.classList.add("selected");
+            }
+          }
+        }
+      };
+      table.addEventListener("mousedown", (event) => {
+        const cell = event.target.closest("td");
+        if (!cell) {
+          return;
+        }
+        selecting = true;
+        startCell = cell;
+        applySelection(cell);
+        event.preventDefault();
+      });
+      table.addEventListener("mouseover", (event) => {
+        if (!selecting) {
+          return;
+        }
+        const cell = event.target.closest("td");
+        if (cell) {
+          applySelection(cell);
+        }
+      });
+      document.addEventListener("mouseup", () => {
+        selecting = false;
+      });
+      document.addEventListener("copy", (event) => {
+        if (!selection) {
+          return;
+        }
+        const { minRow, maxRow, minCol, maxCol } = selection;
+        const lines = [];
+        for (let row = minRow; row <= maxRow; row += 1) {
+          const cells = cellGrid[row] || [];
+          const values = [];
+          for (let col = minCol; col <= maxCol; col += 1) {
+            const cell = cells[col];
+            values.push(cell ? cell.innerText.trim() : "");
+          }
+          lines.push(values.join("\t"));
+        }
+        event.clipboardData.setData("text/plain", lines.join("\n"));
+        event.preventDefault();
+      });
+    }
+  </script>
+</body>
+</html>

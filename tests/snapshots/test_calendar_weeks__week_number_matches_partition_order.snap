@@ -1,0 +1,5 @@
+---
+source: tests/test_calendar_weeks.rs
+expression: "format!(\"monotonic={} first={} last={}\", is_monotonic,\nweek_numbers.first().unwrap(), week_numbers.last().unwrap())"
+---
+monotonic=true first=1 last=53

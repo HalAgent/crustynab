@@ -1,0 +1,5 @@
+---
+source: tests/test_calendar_weeks.rs
+expression: "format!(\"issues_count={}\", issues.len())"
+---
+issues_count=0

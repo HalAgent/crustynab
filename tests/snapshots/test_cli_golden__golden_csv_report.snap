@@ -1,0 +1,9 @@
+---
+source: tests/test_cli_golden.rs
+expression: csv
+---
+category_group_name,category_name,budgeted,spent,balance,goal_cadence
+Essentials,Groceries,50.0,-18.5,31.5,monthly
+Essentials,Rent,100.0,-25.0,75.0,annual
+Fun,Books,10.0,-4.0,6.0,annual
+Fun,Games,20.0,-3.0,17.0,annual

@@ -1,0 +1,15 @@
+---
+source: tests/test_cli_golden.rs
+expression: output
+---
+Week 11 of 2024, starting on Sunday 2024-03-10 and ending on Saturday 2024-03-16
+category_group_name,category_name,budgeted,spent,balance,goal_cadence
+Essentials,Groceries,50.0,-18.5,31.5,monthly
+Essentials,Rent,100.0,-25.0,75.0,annual
+Fun,Books,10.0,-4.0,6.0,annual
+Fun,Games,20.0,-3.0,17.0,annual
+category_group_totals
+category_group_name,budgeted,spent,balance
+Essentials,150.0,-43.5,106.5
+Fun,30.0,-7.0,23.0
+Total,180.0,-50.5,129.5

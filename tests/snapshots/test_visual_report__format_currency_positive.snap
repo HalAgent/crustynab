@@ -1,0 +1,5 @@
+---
+source: tests/test_visual_report.rs
+expression: "format_currency(18.5, true)"
+---
+£18.50

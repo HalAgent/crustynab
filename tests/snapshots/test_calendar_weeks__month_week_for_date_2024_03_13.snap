@@ -1,0 +1,5 @@
+---
+source: tests/test_calendar_weeks.rs
+expression: "format!(\"month={} start={} end={} week_number={}\", w.month, w.week_start,\nw.week_end, w.week_number)"
+---
+month=3 start=2024-03-10 end=2024-03-16 week_number=11

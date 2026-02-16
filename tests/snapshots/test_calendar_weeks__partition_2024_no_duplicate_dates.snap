@@ -1,0 +1,5 @@
+---
+source: tests/test_calendar_weeks.rs
+expression: "format!(\"total={} unique={}\", all_dates.len(), sorted.len())"
+---
+total=366 unique=366

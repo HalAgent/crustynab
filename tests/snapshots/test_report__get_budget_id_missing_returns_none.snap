@@ -1,0 +1,5 @@
+---
+source: tests/test_report.rs
+expression: "format!(\"{:?}\", result)"
+---
+None

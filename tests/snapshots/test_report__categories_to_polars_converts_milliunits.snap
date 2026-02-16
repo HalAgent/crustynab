@@ -1,0 +1,15 @@
+---
+source: tests/test_report.rs
+expression: "format!(\"{df}\")"
+---
+shape: (4, 5)
+┌───────────────┬─────────────────────┬──────────┬─────────┬──────────────┐
+│ category_name ┆ category_group_name ┆ budgeted ┆ balance ┆ goal_cadence │
+│ ---           ┆ ---                 ┆ ---      ┆ ---     ┆ ---          │
+│ str           ┆ str                 ┆ f64      ┆ f64     ┆ str          │
+╞═══════════════╪═════════════════════╪══════════╪═════════╪══════════════╡
+│ Groceries     ┆ Essentials          ┆ 50.0     ┆ 31.5    ┆ monthly      │
+│ Rent          ┆ Essentials          ┆ 100.0    ┆ 75.0    ┆ annual       │
+│ Books         ┆ Fun                 ┆ 10.0     ┆ 6.0     ┆ annual       │
+│ Games         ┆ Fun                 ┆ 20.0     ┆ 17.0    ┆ annual       │
+└───────────────┴─────────────────────┴──────────┴─────────┴──────────────┘

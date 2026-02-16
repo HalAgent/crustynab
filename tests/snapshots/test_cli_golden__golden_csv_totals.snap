@@ -1,0 +1,8 @@
+---
+source: tests/test_cli_golden.rs
+expression: totals_csv
+---
+category_group_name,budgeted,spent,balance
+Essentials,150.0,-43.5,106.5
+Fun,30.0,-7.0,23.0
+Total,180.0,-50.5,129.5

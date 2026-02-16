@@ -4,3 +4,7 @@
 .direnv
 
 /.pre-commit-config.yaml
+
+secrets.cue
+config.json
+/*.html

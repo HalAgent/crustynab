@@ -1,0 +1,15 @@
+---
+source: tests/test_report.rs
+expression: "format!(\"{df}\")"
+---
+shape: (4, 4)
+┌────────────┬────────┬────────────┬───────────────┐
+│ date       ┆ amount ┆ payee_name ┆ category_name │
+│ ---        ┆ ---    ┆ ---        ┆ ---           │
+│ date       ┆ f64    ┆ str        ┆ str           │
+╞════════════╪════════╪════════════╪═══════════════╡
+│ 2024-03-12 ┆ -12.5  ┆ Market     ┆ Groceries     │
+│ 2024-03-13 ┆ -6.0   ┆ Market     ┆ Groceries     │
+│ 2024-03-13 ┆ -4.0   ┆ Market     ┆ Books         │
+│ 2024-03-14 ┆ -25.0  ┆ Landlord   ┆ Rent          │
+└────────────┴────────┴────────────┴───────────────┘

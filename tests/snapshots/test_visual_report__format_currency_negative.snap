@@ -1,0 +1,5 @@
+---
+source: tests/test_visual_report.rs
+expression: "format_currency(-25.0, true)"
+---
+-£25.00

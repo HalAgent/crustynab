@@ -1,0 +1,5 @@
+---
+source: tests/test_calendar_weeks.rs
+expression: "format!(\"count={} first={} last={}\", all_dates.len(),\nall_dates.first().unwrap(), all_dates.last().unwrap())"
+---
+count=366 first=2024-01-01 last=2024-12-31

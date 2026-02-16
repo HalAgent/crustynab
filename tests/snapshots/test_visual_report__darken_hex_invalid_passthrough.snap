@@ -1,0 +1,5 @@
+---
+source: tests/test_visual_report.rs
+expression: "darken_hex(\"not-a-color\", 0.85)"
+---
+not-a-color

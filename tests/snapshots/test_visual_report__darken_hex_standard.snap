@@ -1,0 +1,5 @@
+---
+source: tests/test_visual_report.rs
+expression: "darken_hex(\"#dfe7f5\", 0.85)"
+---
+#bdc4d0

@@ -9,4 +9,16 @@ version = "0.1.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = { version = "4.3.14", features = ["derive"] }
+anyhow = "1"
+chrono = { version = "0.4", features = ["serde"] }
+clap = { version = "4", features = ["derive"] }
+html-escape = "0.2"
+indexmap = { version = "2", features = ["serde"] }
+polars = { version = "0.46", features = ["lazy", "csv", "fmt", "dtype-date", "is_in"] }
+reqwest = { version = "0.12", features = ["blocking", "json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[dev-dependencies]
+insta = { version = "1", features = ["json"] }
+proptest = "1"
