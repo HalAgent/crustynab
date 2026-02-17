@@ -176,14 +176,44 @@ fn format_short_date(date: NaiveDate) -> String {
     formatted
 }
 
+fn dataframe_snapshot(df: &DataFrame) -> String {
+    let columns = df.get_column_names_str().join(", ");
+
+    let rows = (0..df.height())
+        .map(|row_idx| {
+            let values = df
+                .get_columns()
+                .iter()
+                .map(|col| match col.get(row_idx) {
+                    Ok(value) => value.to_string(),
+                    Err(err) => format!("<err:{err}>"),
+                })
+                .collect::<Vec<_>>()
+                .join(", ");
+
+            format!("{row_idx}: [{values}]")
+        })
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    if rows.is_empty() {
+        format!("shape: {:?}\ncolumns: [{columns}]\n", df.shape())
+    } else {
+        format!("shape: {:?}\ncolumns: [{columns}]\n{rows}\n", df.shape())
+    }
+}
+
 #[test]
 fn golden_polars_print() {
     let cfg = make_config(true);
     let (header, report_display, totals) = run_report(&cfg).unwrap();
-    unsafe { std::env::set_var("POLARS_FMT_MAX_ROWS", "-1") };
     let df = report_display.collect().unwrap();
     let totals_df = totals.collect().unwrap();
-    let output = format!("{header}\n{df}\nCategory group totals\n{totals_df}\n");
+    let output = format!(
+        "{header}\n{}\nCategory group totals\n{}",
+        dataframe_snapshot(&df),
+        dataframe_snapshot(&totals_df)
+    );
     insta::assert_snapshot!(output);
 }
 

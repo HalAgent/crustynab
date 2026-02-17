@@ -4,24 +4,15 @@ expression: output
 ---
 Week 11 of 2024, starting on Sunday 2024-03-10 and ending on Saturday 2024-03-16
 shape: (4, 6)
-┌─────────────────────┬───────────────┬──────────┬───────┬─────────┬──────────────┐
-│ category_group_name ┆ category_name ┆ budgeted ┆ spent ┆ balance ┆ goal_cadence │
-│ ---                 ┆ ---           ┆ ---      ┆ ---   ┆ ---     ┆ ---          │
-│ str                 ┆ str           ┆ f64      ┆ f64   ┆ f64     ┆ str          │
-╞═════════════════════╪═══════════════╪══════════╪═══════╪═════════╪══════════════╡
-│ Essentials          ┆ Groceries     ┆ 50.0     ┆ -18.5 ┆ 31.5    ┆ monthly      │
-│ Essentials          ┆ Rent          ┆ 100.0    ┆ -25.0 ┆ 75.0    ┆ annual       │
-│ Fun                 ┆ Books         ┆ 10.0     ┆ -4.0  ┆ 6.0     ┆ annual       │
-│ Fun                 ┆ Games         ┆ 20.0     ┆ -3.0  ┆ 17.0    ┆ annual       │
-└─────────────────────┴───────────────┴──────────┴───────┴─────────┴──────────────┘
+columns: [category_group_name, category_name, budgeted, spent, balance, goal_cadence]
+0: ["Essentials", "Groceries", 50.0, -18.5, 31.5, "monthly"]
+1: ["Essentials", "Rent", 100.0, -25.0, 75.0, "annual"]
+2: ["Fun", "Books", 10.0, -4.0, 6.0, "annual"]
+3: ["Fun", "Games", 20.0, -3.0, 17.0, "annual"]
+
 Category group totals
 shape: (3, 4)
-┌─────────────────────┬──────────┬───────┬─────────┐
-│ category_group_name ┆ budgeted ┆ spent ┆ balance │
-│ ---                 ┆ ---      ┆ ---   ┆ ---     │
-│ str                 ┆ f64      ┆ f64   ┆ f64     │
-╞═════════════════════╪══════════╪═══════╪═════════╡
-│ Essentials          ┆ 150.0    ┆ -43.5 ┆ 106.5   │
-│ Fun                 ┆ 30.0     ┆ -7.0  ┆ 23.0    │
-│ Total               ┆ 180.0    ┆ -50.5 ┆ 129.5   │
-└─────────────────────┴──────────┴───────┴─────────┘
+columns: [category_group_name, budgeted, spent, balance]
+0: ["Essentials", 150.0, -43.5, 106.5]
+1: ["Fun", 30.0, -7.0, 23.0]
+2: ["Total", 180.0, -50.5, 129.5]
