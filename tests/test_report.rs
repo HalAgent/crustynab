@@ -78,6 +78,13 @@ fn make_category_groups() -> Vec<CategoryGroup> {
     ]
 }
 
+fn set_polars_fmt_for_snapshots() {
+    unsafe {
+        std::env::set_var("POLARS_FMT_MAX_ROWS", "-1");
+        std::env::set_var("POLARS_TABLE_WIDTH", "200");
+    }
+}
+
 fn make_transactions() -> Vec<Transaction> {
     vec![
         Transaction {
@@ -167,6 +174,7 @@ fn get_categories_to_watch_filters_correctly() {
 fn transactions_to_polars_expands_splits() {
     let transactions = make_transactions();
     let tf = report::transactions_to_polars(&transactions).unwrap();
+    set_polars_fmt_for_snapshots();
     let df = tf.0.collect().unwrap();
     insta::assert_snapshot!(format!("{df}"));
 }
@@ -176,6 +184,7 @@ fn categories_to_polars_converts_milliunits() {
     let groups = make_category_groups();
     let cats: Vec<Category> = groups.into_iter().flat_map(|g| g.categories).collect();
     let cf = report::categories_to_polars(&cats).unwrap();
+    set_polars_fmt_for_snapshots();
     let df = cf.0.collect().unwrap();
     insta::assert_snapshot!(format!("{df}"));
 }
@@ -187,6 +196,7 @@ fn relevant_transactions_filters_date_range() {
     let start = NaiveDate::from_ymd_opt(2024, 3, 12).unwrap();
     let end = NaiveDate::from_ymd_opt(2024, 3, 14).unwrap();
     let filtered = report::relevant_transactions(tf, start, end);
+    set_polars_fmt_for_snapshots();
     let df = filtered.0.collect().unwrap();
     insta::assert_snapshot!(format!("{df}"));
 }
@@ -205,6 +215,7 @@ fn build_report_table_sums_spent() {
 
     let cat_names: HashSet<String> = all_cats.iter().map(|c| c.name.clone()).collect();
     let report = report::build_report_table(cf, tf, &cat_names).unwrap();
+    set_polars_fmt_for_snapshots();
     let df = report.collect().unwrap();
     insta::assert_snapshot!(format!("{df}"));
 }
@@ -224,6 +235,7 @@ fn category_group_totals_match_rows() {
     let cat_names: HashSet<String> = all_cats.iter().map(|c| c.name.clone()).collect();
     let report = report::build_report_table(cf, tf, &cat_names).unwrap();
     let totals = report::build_category_group_totals_table(report).unwrap();
+    set_polars_fmt_for_snapshots();
     let df = totals.collect().unwrap();
     insta::assert_snapshot!(format!("{df}"));
 }
@@ -270,6 +282,7 @@ fn category_group_totals_include_balance_without_spending() {
     let cat_names: HashSet<String> = categories.iter().map(|c| c.name.clone()).collect();
     let report = report::build_report_table(cf, tf, &cat_names).unwrap();
     let totals = report::build_category_group_totals_table(report).unwrap();
+    set_polars_fmt_for_snapshots();
     let df = totals.collect().unwrap();
     insta::assert_snapshot!(format!("{df}"));
 }
@@ -326,6 +339,7 @@ fn split_transactions_are_counted_per_category() {
 
     let cat_names: HashSet<String> = categories.iter().map(|c| c.name.clone()).collect();
     let report = report::build_report_table(cf, tf, &cat_names).unwrap();
+    set_polars_fmt_for_snapshots();
     let df = report.collect().unwrap();
     insta::assert_snapshot!(format!("{df}"));
 }
@@ -351,6 +365,7 @@ fn transactions_with_no_category_are_filtered() {
         },
     ];
     let tf = report::transactions_to_polars(&transactions).unwrap();
+    set_polars_fmt_for_snapshots();
     let df = tf.0.collect().unwrap();
     insta::assert_snapshot!(format!("{df}"));
 }
