@@ -1,15 +1,10 @@
 ---
 source: tests/test_report.rs
-expression: "format!(\"{df}\")"
+expression: dataframe_snapshot(&df)
 ---
 shape: (4, 6)
-┌─────────────────────┬───────────────┬──────────┬───────┬─────────┬──────────────┐
-│ category_group_name ┆ category_name ┆ budgeted ┆ spent ┆ balance ┆ goal_cadence │
-│ ---                 ┆ ---           ┆ ---      ┆ ---   ┆ ---     ┆ ---          │
-│ str                 ┆ str           ┆ f64      ┆ f64   ┆ f64     ┆ str          │
-╞═════════════════════╪═══════════════╪══════════╪═══════╪═════════╪══════════════╡
-│ Essentials          ┆ Groceries     ┆ 50.0     ┆ -18.5 ┆ 31.5    ┆ monthly      │
-│ Essentials          ┆ Rent          ┆ 100.0    ┆ -25.0 ┆ 75.0    ┆ annual       │
-│ Fun                 ┆ Books         ┆ 10.0     ┆ -4.0  ┆ 6.0     ┆ annual       │
-│ Fun                 ┆ Games         ┆ 20.0     ┆ -3.0  ┆ 17.0    ┆ annual       │
-└─────────────────────┴───────────────┴──────────┴───────┴─────────┴──────────────┘
+columns: [category_group_name, category_name, budgeted, spent, balance, goal_cadence]
+0: ["Essentials", "Groceries", 50.0, -18.5, 31.5, "monthly"]
+1: ["Essentials", "Rent", 100.0, -25.0, 75.0, "annual"]
+2: ["Fun", "Books", 10.0, -4.0, 6.0, "annual"]
+3: ["Fun", "Games", 20.0, -3.0, 17.0, "annual"]

@@ -1,13 +1,8 @@
 ---
 source: tests/test_report.rs
-expression: "format!(\"{df}\")"
+expression: dataframe_snapshot(&df)
 ---
 shape: (2, 4)
-┌─────────────────────┬──────────┬───────┬─────────┐
-│ category_group_name ┆ budgeted ┆ spent ┆ balance │
-│ ---                 ┆ ---      ┆ ---   ┆ ---     │
-│ str                 ┆ f64      ┆ f64   ┆ f64     │
-╞═════════════════════╪══════════╪═══════╪═════════╡
-│ Essentials          ┆ 70.0     ┆ -12.5 ┆ 120.0   │
-│ Total               ┆ 70.0     ┆ -12.5 ┆ 120.0   │
-└─────────────────────┴──────────┴───────┴─────────┘
+columns: [category_group_name, budgeted, spent, balance]
+0: ["Essentials", 70.0, -12.5, 120.0]
+1: ["Total", 70.0, -12.5, 120.0]
