@@ -1,16 +1,11 @@
 ---
 source: tests/test_report.rs
-expression: "format!(\"{df}\")"
+expression: dataframe_snapshot(&df)
 ---
 shape: (5, 4)
-┌────────────┬────────┬────────────┬───────────────┐
-│ date       ┆ amount ┆ payee_name ┆ category_name │
-│ ---        ┆ ---    ┆ ---        ┆ ---           │
-│ date       ┆ f64    ┆ str        ┆ str           │
-╞════════════╪════════╪════════════╪═══════════════╡
-│ 2024-03-12 ┆ -12.5  ┆ Market     ┆ Groceries     │
-│ 2024-03-13 ┆ -6.0   ┆ Market     ┆ Groceries     │
-│ 2024-03-13 ┆ -4.0   ┆ Market     ┆ Books         │
-│ 2024-03-14 ┆ -25.0  ┆ Landlord   ┆ Rent          │
-│ 2024-03-15 ┆ -3.0   ┆ Arcade     ┆ Games         │
-└────────────┴────────┴────────────┴───────────────┘
+columns: [date, amount, payee_name, category_name]
+0: [2024-03-12, -12.5, "Market", "Groceries"]
+1: [2024-03-13, -6.0, "Market", "Groceries"]
+2: [2024-03-13, -4.0, "Market", "Books"]
+3: [2024-03-14, -25.0, "Landlord", "Rent"]
+4: [2024-03-15, -3.0, "Arcade", "Games"]

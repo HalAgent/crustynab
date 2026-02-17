@@ -1,13 +1,8 @@
 ---
 source: tests/test_report.rs
-expression: "format!(\"{df}\")"
+expression: dataframe_snapshot(&df)
 ---
 shape: (2, 6)
-┌─────────────────────┬───────────────┬──────────┬───────┬─────────┬──────────────┐
-│ category_group_name ┆ category_name ┆ budgeted ┆ spent ┆ balance ┆ goal_cadence │
-│ ---                 ┆ ---           ┆ ---      ┆ ---   ┆ ---     ┆ ---          │
-│ str                 ┆ str           ┆ f64      ┆ f64   ┆ f64     ┆ str          │
-╞═════════════════════╪═══════════════╪══════════╪═══════╪═════════╪══════════════╡
-│ Essentials          ┆ Groceries     ┆ 50.0     ┆ -12.5 ┆ 30.0    ┆ monthly      │
-│ Essentials          ┆ Savings       ┆ 20.0     ┆ -7.5  ┆ 90.0    ┆ monthly      │
-└─────────────────────┴───────────────┴──────────┴───────┴─────────┴──────────────┘
+columns: [category_group_name, category_name, budgeted, spent, balance, goal_cadence]
+0: ["Essentials", "Groceries", 50.0, -12.5, 30.0, "monthly"]
+1: ["Essentials", "Savings", 20.0, -7.5, 90.0, "monthly"]

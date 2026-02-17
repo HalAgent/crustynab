@@ -1,12 +1,7 @@
 ---
 source: tests/test_report.rs
-expression: "format!(\"{df}\")"
+expression: dataframe_snapshot(&df)
 ---
 shape: (1, 4)
-┌────────────┬────────┬────────────┬───────────────┐
-│ date       ┆ amount ┆ payee_name ┆ category_name │
-│ ---        ┆ ---    ┆ ---        ┆ ---           │
-│ date       ┆ f64    ┆ str        ┆ str           │
-╞════════════╪════════╪════════════╪═══════════════╡
-│ 2024-03-12 ┆ -3.0   ┆ Store      ┆ Groceries     │
-└────────────┴────────┴────────────┴───────────────┘
+columns: [date, amount, payee_name, category_name]
+0: [2024-03-12, -3.0, "Store", "Groceries"]
