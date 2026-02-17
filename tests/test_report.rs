@@ -79,32 +79,30 @@ fn make_category_groups() -> Vec<CategoryGroup> {
 }
 
 fn dataframe_snapshot(df: &polars::prelude::DataFrame) -> String {
-    let mut out = String::new();
-    out.push_str(&format!("shape: {:?}\n", df.shape()));
-    out.push_str("columns: [");
-    for (idx, name) in df.get_column_names_str().iter().enumerate() {
-        if idx > 0 {
-            out.push_str(", ");
-        }
-        out.push_str(name);
-    }
-    out.push_str("]\n");
+    let columns = df.get_column_names_str().join(", ");
 
-    for row_idx in 0..df.height() {
-        out.push_str(&format!("{row_idx}: ["));
-        for (col_idx, col) in df.get_columns().iter().enumerate() {
-            if col_idx > 0 {
-                out.push_str(", ");
-            }
-            match col.get(row_idx) {
-                Ok(value) => out.push_str(&value.to_string()),
-                Err(err) => out.push_str(&format!("<err:{err}>")),
-            }
-        }
-        out.push_str("]\n");
-    }
+    let rows = (0..df.height())
+        .map(|row_idx| {
+            let values = df
+                .get_columns()
+                .iter()
+                .map(|col| match col.get(row_idx) {
+                    Ok(value) => value.to_string(),
+                    Err(err) => format!("<err:{err}>"),
+                })
+                .collect::<Vec<_>>()
+                .join(", ");
 
-    out
+            format!("{row_idx}: [{values}]")
+        })
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    if rows.is_empty() {
+        format!("shape: {:?}\ncolumns: [{columns}]\n", df.shape())
+    } else {
+        format!("shape: {:?}\ncolumns: [{columns}]\n{rows}\n", df.shape())
+    }
 }
 
 fn make_transactions() -> Vec<Transaction> {
